@@ -1,0 +1,17 @@
+---
+- name: Install additional packages for vim + Xdebug.
+  apt: "name={{ item }} state=installed"
+  with_items:
+    - zip
+    - vim-nox
+
+# Use --no since the usual question is whether to overwrite an existing
+# installation.
+# See https://www.drupal.org/project/vimrc .
+- name: Configure Vim for editing Drupal.
+  command: "drush --no dl vimrc"
+  sudo: no
+
+- name: Download recommended Vim plugins.
+  command: "drush --yes vimrc-install"
+  sudo: no
