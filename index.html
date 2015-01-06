@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Drupal-dev-vm by benjifisher</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Drupal-dev-vm</h1>
+        <h2>Drupal Development VM (for Drupal 6, 7, 8, etc.) using Vagrant + VirtualBox + Ansible + Xdebug</h2>
+        <a href="https://github.com/benjifisher/drupal-dev-vm" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="drupal-development-vm" class="anchor" href="#drupal-development-vm" aria-hidden="true"><span class="octicon octicon-link"></span></a>Drupal Development VM</h1>
+
+<p><strong>For Drupal 6, 7, 8, etc.</strong></p>
+
+<p>This project aims to make spinning up a simple local Drupal test/development environment incredibly quick and easy, and to introduce new developers to the wonderful world of Drupal development on local virtual machines (instead of crufty old MAMP/WAMP-based development).</p>
+
+<p>It will install the following on an Ubuntu 12.04 linux VM:</p>
+
+<ul>
+<li>Apache 2.2.x</li>
+<li>PHP 5.5.x (configurable)</li>
+<li>MySQL 5.5.x</li>
+<li>Drush latest release (configurable)</li>
+<li>Drupal 6.x, 7.x, or 8.x.x (configurable)</li>
+<li>XHProf, for profiling your code</li>
+<li>XDebug, for debugging your code</li>
+<li>MailHog, for catching and debugging email</li>
+<li>Vim 7.3, for editing and as an interface to Xdebug</li>
+</ul>
+
+<p>It should take 5-10 minutes to build or rebuild the VM from scratch on a decent broadband connection.</p>
+
+<h2>
+<a id="customizing-the-vm" class="anchor" href="#customizing-the-vm" aria-hidden="true"><span class="octicon octicon-link"></span></a>Customizing the VM</h2>
+
+<p>There are a couple places where you can customize the VM for your needs:</p>
+
+<ul>
+<li>
+<code>config.yml</code>: Contains variables like the VM domain name and IP address, PHP and MySQL configuration, etc.</li>
+<li>
+<code>drupal.make</code>: Contains configuration for the Drupal core version, modules, and patches that will be downloaded on Drupal's initial installation (more about <a href="https://www.drupal.org/node/1432374">Drush make files</a>).</li>
+</ul>
+
+<p>If you want to switch from Drupal 8 (default) to Drupal 7 or 6 on the initial install, do the following:</p>
+
+<ol>
+<li>Update <code>projects[drupal][version]</code> and <code>core</code> inside the <code>drupal.make</code> file.</li>
+<li>Update <code>drupal_major_version</code> inside <code>config.yml</code>.</li>
+</ol>
+
+<h2>
+<a id="quick-start-guide" class="anchor" href="#quick-start-guide" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick Start Guide</h2>
+
+<h3>
+<a id="1---install-dependencies-virtualbox-vagrant-ansible" class="anchor" href="#1---install-dependencies-virtualbox-vagrant-ansible" aria-hidden="true"><span class="octicon octicon-link"></span></a>1 - Install dependencies (VirtualBox, Vagrant, Ansible)</h3>
+
+<ol>
+<li>Download and install <a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>.</li>
+<li>Download and install <a href="http://www.vagrantup.com/downloads.html">Vagrant</a>.</li>
+<li>[Mac/Linux only] Install <a href="http://docs.ansible.com/intro_installation.html">Ansible</a>.</li>
+</ol>
+
+<p>Note for Windows users: <em>Ansible will be installed inside the VM, and everything will be configured internally (unlike on Mac/Linux hosts). See <a href="https://github.com/geerlingguy/JJG-Ansible-Windows">JJG-Ansible-Windows</a> for more information.</em></p>
+
+<h3>
+<a id="2---build-the-virtual-machine" class="anchor" href="#2---build-the-virtual-machine" aria-hidden="true"><span class="octicon octicon-link"></span></a>2 - Build the Virtual Machine</h3>
+
+<ol>
+<li>Download this project and put it wherever you want.</li>
+<li>Copy <code>example.config.yml</code> to <code>config.yml</code>, and modify it to use settings you like.</li>
+<li>Install Ansible Galaxy roles required for this VM: <code>$ sudo ansible-galaxy install -r requirements.txt</code>
+</li>
+<li>Open Terminal, cd to this directory (containing the <code>Vagrantfile</code> and this README file).</li>
+<li>Type in <code>vagrant up</code>, and let Vagrant do its magic.</li>
+</ol>
+
+<p>Note: <em>If there are any errors during the course of running <code>vagrant up</code>, and it drops you back to your command prompt, just run <code>vagrant provision</code> to continue building the VM from where you left off. If there are still errors after doing this a few times, post an issue to this project's issue queue on GitHub with the error.</em></p>
+
+<h3>
+<a id="3---configure-your-host-machine-to-access-the-vm" class="anchor" href="#3---configure-your-host-machine-to-access-the-vm" aria-hidden="true"><span class="octicon octicon-link"></span></a>3 - Configure your host machine to access the VM.</h3>
+
+<ol>
+<li>
+<a href="http://www.rackspace.com/knowledge_center/article/how-do-i-modify-my-hosts-file">Edit your hosts file</a>, adding the line <code>192.168.88.88  drupaltest.dev</code> so you can connect to the VM.</li>
+<li>Open your browser and access <a href="http://drupaltest.dev/">http://drupaltest.dev/</a>.</li>
+</ol>
+
+<h3>
+<a id="4---start-a-debugging-session" class="anchor" href="#4---start-a-debugging-session" aria-hidden="true"><span class="octicon octicon-link"></span></a>4 - Start a debugging session.</h3>
+
+<ol>
+<li>Edit <code>config.yml</code>, adding the line <code>php_xdebug_remote_enable: "true"</code>.</li>
+<li>Run <code>vagrant provision</code> (if the VM is already running) or <code>vagrant up --provision</code> (if not).</li>
+<li>Log in to the VM with <code>vagrant ssh</code>.</li>
+<li>Maximize your Terminal window.</li>
+<li>Start vim:  <code>vim</code>.</li>
+<li>Inside vim, start listening for Xdebug with <code>&lt;F5&gt;</code> or <code>:python debugger.run()</code>.</li>
+<li>In your web browser, open <a href="http://drupaltest.dev/?XDEBUG_SESSION_START=sublime.xdebug">http://drupaltest.dev/?XDEBUG_SESSION_START=sublime.xdebug</a>.  (The key <code>sublime.xdebug</code> is the default setting.  You can override it by adding <code>php_xdebug_idekey: foo</code> to <code>config.yml</code>.)</li>
+<li>Go back to your Terminal window and start debugging!</li>
+</ol>
+
+<h2>
+<a id="syncing-folders" class="anchor" href="#syncing-folders" aria-hidden="true"><span class="octicon octicon-link"></span></a>Syncing folders</h2>
+
+<p>You can share folders between your host computer and the VM in a variety of ways; the two most commonly-used methods are using an NFS share, or using Vagrant's rsync method to synchronize a folder from your host into the guest VM. The <code>example.config.yml</code> file contains an example <code>rsync</code> share that would sync the folder <code>~/Sites/drupal</code> on your host into a <code>/drupal</code> folder on the VM.</p>
+
+<p>If you want to use NFS for the share instead, you could simply change the share to:</p>
+
+<pre><code>vagrant_synced_folders:
+  - local_path: ~/Sites/drupal
+    destination: /drupal
+    id: drupal
+    type: nfs
+</code></pre>
+
+<p>You can add as many synced folders as you'd like, and you can configure <a href="https://docs.vagrantup.com/v2/synced-folders/index.html">any type of share</a> supported by Vagrant; just add another item to the list of <code>vagrant_synced_folders</code>.</p>
+
+<h2>
+<a id="connecting-to-mysql" class="anchor" href="#connecting-to-mysql" aria-hidden="true"><span class="octicon octicon-link"></span></a>Connecting to MySQL</h2>
+
+<p>By default, this VM is set up so you can manage mysql databases on your own. The default root MySQL user credentials are <code>root</code> for username+password, but you could change the password via <code>config.yml</code>. I use the MySQL GUI <a href="http://www.sequelpro.com/">Sequel Pro</a> (Mac-only) to connect and manage databases, then Drush to sync databases (sometimes I'll just do a dump and import, but Drush is usually quicker, and is easier to do over and over again when you need it).</p>
+
+<h3>
+<a id="connect-using-sequel-pro-or-a-similar-client" class="anchor" href="#connect-using-sequel-pro-or-a-similar-client" aria-hidden="true"><span class="octicon octicon-link"></span></a>Connect using Sequel Pro (or a similar client):</h3>
+
+<ol>
+<li>Use the SSH connection type.</li>
+<li>Set the following options:
+
+<ul>
+<li>MySQL Host: <code>127.0.0.1</code>
+</li>
+<li>Username: <code>root</code>
+</li>
+<li>Password: <code>root</code> (or whatever password you chose in <code>config.yml</code>)</li>
+<li>SSH Host: <code>192.168.88.88</code> (or whatever IP you chose in <code>config.yml</code>)</li>
+<li>SSH User: <code>vagrant</code>
+</li>
+<li>SSH Key: (browse to your <code>~/.vagrant.d/</code> folder and choose <code>insecure_private_key</code>)</li>
+</ul>
+</li>
+</ol>
+
+<p>You should be able to connect as the root user and add, manage, and remove databases and users.</p>
+
+<p>You can also install and use PHPMyAdmin (a simple web-based MySQL GUI) by adding the <code>geerlingguy.phpmyadmin</code> role to <code>provisioning/playbook.yml</code>, and installing the role with <code>$ ansible-galaxy install geerlingguy.phpmyadmin</code>.</p>
+
+<h2>
+<a id="using-xhprof-to-profile-code" class="anchor" href="#using-xhprof-to-profile-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using XHProf to Profile Code</h2>
+
+<p>The easiest way to use XHProf to profile your PHP code on a Drupal site is to install the Devel module, then in Devel's configuration, check the 'Enable profiling of all page views and drush requests' checkbox. In the settings that appear below, set the following values:</p>
+
+<ul>
+<li>
+<strong>xhprof directory</strong>: <code>/usr/share/php</code>
+</li>
+<li>
+<strong>XHProf URL</strong>: <code>http://local.xhprof.com/</code> (assuming you have this set in <code>apache_vhosts</code> in config.yml)</li>
+</ul>
+
+<h2>
+<a id="catchingdebugging-email-with-mailhog" class="anchor" href="#catchingdebugging-email-with-mailhog" aria-hidden="true"><span class="octicon octicon-link"></span></a>Catching/Debugging Email with MailHog</h2>
+
+<p>By default, the VM is configured to redirect PHP's emails to MailHog (instead of sending them to the outside world). You can access the MailHog UI at <code>http://drupaltest.dev:8025/</code> (where <code>drupaltest.dev</code> is the domain you've configured for the VM).</p>
+
+<p>You can override the default behavior of redirecting email to MailHog by editing or removing the <code>php_sendmail_path</code> inside <code>config.yml</code>.</p>
+
+<h2>
+<a id="notes" class="anchor" href="#notes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Notes</h2>
+
+<ul>
+<li>To shut down the virtual machine, enter <code>vagrant halt</code> in the Terminal in the same folder that has the <code>Vagrantfile</code>. To destroy it completely (if you want to save a little disk space, or want to rebuild it from scratch with <code>vagrant up</code> again), type in <code>vagrant destroy</code>.</li>
+<li>You can change the installed version of Drupal or drush, or any other configuration options, by editing the variables within <code>vars/main.yml</code>.</li>
+<li>Find out more about local development with Vagrant + VirtualBox + Ansible in this presentation: <a href="http://www.slideshare.net/geerlingguy/local-development-on-virtual-machines-vagrant-virtualbox-and-ansible">Local Development Environments - Vagrant, VirtualBox and Ansible</a>.</li>
+<li>Learn about how Ansible can accelerate your ability to innovate and manage your infrastructure by reading <a href="https://leanpub.com/ansible-for-devops">Ansible for DevOps</a>.</li>
+</ul>
+
+<h2>
+<a id="about-the-author" class="anchor" href="#about-the-author" aria-hidden="true"><span class="octicon octicon-link"></span></a>About the Author</h2>
+
+<p><a href="http://jeffgeerling.com/">Jeff Geerling</a>, owner of <a href="http://www.midwesternmac.com/">Midwestern Mac, LLC</a>, created this project in 2014 so he could accelerate his Drupal core and contrib development workflow. This project, and others like it, are also featured as examples in Jeff's book, <a href="https://leanpub.com/ansible-for-devops">Ansible for DevOps</a>.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/benjifisher/drupal-dev-vm/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/benjifisher/drupal-dev-vm/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/benjifisher/drupal-dev-vm"></a> is maintained by <a href="https://github.com/benjifisher">benjifisher</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
